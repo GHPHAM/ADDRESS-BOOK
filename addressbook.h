@@ -1,67 +1,34 @@
 #ifndef ADDRESSBOOK_H
 #define ADDRESSBOOK_H
 
-#include <iostream>
 #include "LinkedList.h"
 
+/* Address Book structure */
 struct AddressBook {
-    Node* head;
-    AddressBook()
-    {
-        head = nullptr;
-    }
-    AddressBook(char* name, char* email, short int phoneNumber)
-    {
-        head = nullptr;
-        add(name, email, phoneNumber);
-    }
-    void add(char* name, char* email, short int phoneNumber)
-    {
-        Node* node = new Node();
-        node->name = name;
-        node->email = email;
-        node->phoneNumber = phoneNumber;
-        node->next = nullptr;
-
-        // New node is either first, or must be added to the front I.E the first name in the alphabetical order
-        if (head == nullptr || strcmp(name, head->name) < 0)
-        {
-            node->next = head;
-            head = node;
-            return;
-        }
-
-        // New node is not the first, so must find the correct place for it
-        Node* current = head;
-        while (current->next != nullptr && strcmp(current->next->name, name) < 0)
-            current = current->next;
-
-        // Insert the new node
-        node->next = current->next;
-        current->next = node;
-    }
-
-    /* Since we can't use the library cstring, we have to implement it ourselves
-     * We basically go through the character array, comparing each character
-     * If the characters are different, we return the difference
-    */
-    int strcmp(const char *str1, const char *str2)
-    {
-        if (str1 == str2)
-            return 0; // If same memory address then is identical
-
-        long int i = 0;
-        while (str1[i] != '\0' && str2[i] != '\0')
-        {
-            if (str1[i] != str2[i]) // if the characters are literally the same, there's literally no reason to compare. move on.
-            {
-                return (unsigned char)str1[i] - (unsigned char)str2[i];
-            }
-            i++;
-        }
-        return (unsigned char)str1[i] - (unsigned char)str2[i];
-    }
+    struct Node* head;
 };
+
+/* We can technically feed it struct Node** head instead of struct AddressBook* book,
+ * but I think abstraction would be good here
+*/
+
+// init
+void AddressBook_init(struct AddressBook* book);
+void AddressBook_init_with_entry(struct AddressBook* book, char* name, char* email, short int phoneNumber);
+
+// add
+void AddressBook_add(struct AddressBook* book, char* name, char* email, short int phoneNumber);
+
+/* remove
+ * At first I wanted to only look for name, but then there are some people with the same name,
+ * so I think a phone number works better
+*/
+void AddressBook_remove(struct AddressBook* book, short int phoneNumber);
+
+/* find
+ * If there's more people with the name name, just print them all!
+*/
+void AddressBook_find(struct AddressBook* book, char* name);
 
 
 #endif

@@ -30,5 +30,10 @@ void AddressBook_remove(struct AddressBook* book, short int phoneNumber);
 */
 void AddressBook_find(struct AddressBook* book, char* name);
 
+// print
+void AddressBook_print(struct AddressBook* book);
+
+// cleanup
+void AddressBook_cleanup(struct AddressBook* book);
 
 #endif

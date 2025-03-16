@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include "AddressBook.h"
 
 void AddressBook_init(struct AddressBook* book)
@@ -37,6 +38,25 @@ void AddressBook_add(struct AddressBook* book, char* name, char* email, short in
     // Insert the new node
     node->next = current->next;
     current->next = node;
+}
+
+void AddressBook_print(struct AddressBook* book) {
+    struct Node* current = book->head;
+    printf("Address Book Entries:\n");
+    printf("--------------------\n");
+
+    if (current == NULL) {
+        printf("(Empty address book)\n");
+        return;
+    }
+
+    while (current != NULL) {
+        printf("Name: %s\n", current->name);
+        printf("Email: %s\n", current->email);
+        printf("Phone: %d\n", current->phoneNumber);
+        printf("--------------------\n");
+        current = current->next;
+    }
 }
 
 /* ultility */

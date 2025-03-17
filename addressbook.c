@@ -59,6 +59,13 @@ void AddressBook_print(struct AddressBook* book) {
     }
 }
 
+bool AddressBook_isEmpty(struct AddressBook* book)
+{
+    if (book->head == NULL)
+        return true;
+    return false;
+}
+
 /* ultility */
 
 /* Since we can't use the library cstring, we have to implement it ourselves.

@@ -40,6 +40,52 @@ void AddressBook_add(struct AddressBook* book, char* name, char* email, short in
     current->next = node;
 }
 
+void AddressBook_search(struct AddressBook* book, char* name, char* email, short int phoneNumber)
+{
+    struct Node* node = book->head;
+    while(current != NULL)
+        {
+            if((name && strcmp(current->name, name) == 0) ||
+                (email && strcmp(current->email, email) == 0) ||
+                (phoneNumber != -1 && current->phoneNumber == phoneNumber))
+            {
+                return current;
+            }
+            current = current->next;
+        }
+    return NULL;
+}
+
+void AddressBook_free(struct AddressBook* book)
+{
+    struct Node* current = book->head;
+    struct Node* temp;
+    while(current != NULL)
+        {
+            temp = current;
+            current = current->next;
+            free(temp->name);
+            free(temp->email);
+            free(temp);
+        }
+    book->head = NULL;
+}
+
+void AddressBook_edit(struct AddressBook* book, char* name, char* email, short int phoneNumber)
+{
+    struct Node* node = AddressBook_search(book, name);
+        if(node != NULL)
+        {
+            free(node->email);
+            node->email = strdup(new_email);
+            node->phoneNumber = new_phoneNumber;
+        }
+        else
+        {
+            printf("Entry not found: %s\n", name);
+        }
+}
+
 void AddressBook_print(struct AddressBook* book) {
     struct Node* current = book->head;
     printf("Address Book Entries:\n");

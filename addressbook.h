@@ -2,6 +2,7 @@
 #define ADDRESSBOOK_H
 
 #include "LinkedList.h"
+#include <stdbool.h> // bool is not included by default
 
 /* Address Book structure */
 struct AddressBook {
@@ -35,5 +36,7 @@ void AddressBook_print(struct AddressBook* book);
 
 // cleanup
 void AddressBook_cleanup(struct AddressBook* book);
+
+bool AddressBook_isEmpty(struct AddressBook* book);
 
 #endif

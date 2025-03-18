@@ -36,4 +36,10 @@ void AddressBook_print(struct AddressBook* book);
 // cleanup
 void AddressBook_cleanup(struct AddressBook* book);
 
+// load
+void AddressBook_load(struct AddressBook* book);
+
+// save
+void AddressBook_save(struct AddressBook* book);
+
 #endif

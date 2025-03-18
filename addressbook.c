@@ -89,3 +89,18 @@ int strcmp(const char* str1, const char* str2)
     }
     return (unsigned char)str1[i] - (unsigned char)str2[i];
 }
+
+// compiler expects long long unsigned int, but we can just use size_t since it's the biggest, and also the same
+size_t strcspn(const char *s, const char *reject) {
+    size_t i, j;
+
+    for (i = 0; s[i] != '\0'; i++) {
+        for (j = 0; reject[j] != '\0'; j++) {
+            if (s[i] == reject[j]) {
+                return i;
+            }
+        }
+    }
+
+    return i;
+}

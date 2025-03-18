@@ -39,4 +39,8 @@ void AddressBook_cleanup(struct AddressBook* book);
 
 bool AddressBook_isEmpty(struct AddressBook* book);
 
+// Ultilities
+int strcmp(const char* str1, const char* str2);
+long long unsigned int strcspn(const char *s, const char *reject);
+
 #endif

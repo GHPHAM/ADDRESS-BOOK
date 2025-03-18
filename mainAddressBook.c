@@ -1,5 +1,6 @@
 #include "addressbook.h"
 #include "LinkedList.h"
+#include "unity.h"
 #include <stdio.h>
 
 void menu(struct AddressBook* book) {
@@ -141,10 +142,91 @@ void menu(struct AddressBook* book) {
     }
 }
 
-int main() {
-    struct AddressBook myBook;
+/*
+ * UNITY TEST
+ */
 
+struct AddressBook testBook;
+
+// Init and free
+// This will run before each test
+void setUp(void)
+{
+    AddressBook_init(&testBook); // Initialize a fresh address book
+}
+
+// This will run after each test
+void tearDown(void)
+{
+    AddressBook_free(&testBook); // Clean up
+}
+
+// Test the initialization function
+void test_AddressBook_init(void)
+{
+    TEST_ASSERT_TRUE(AddressBook_isEmpty(&testBook));
+}
+
+// Test adding a contact
+void test_AddressBook_add(void)
+{
+    AddressBook_add(&testBook, "Test Name", "test@example.com", 1234);
+    TEST_ASSERT_FALSE(AddressBook_isEmpty(&testBook));
+
+    struct Node* node = AddressBook_find(&testBook, "Test Name", "test@example.com", 1234);
+    TEST_ASSERT_NOT_NULL(node);
+    TEST_ASSERT_EQUAL_STRING("Test Name", node->name);
+    TEST_ASSERT_EQUAL_STRING("test@example.com", node->email);
+    TEST_ASSERT_EQUAL_INT(1234, node->phoneNumber);
+}
+
+// Test removing a contact
+void test_AddressBook_remove(void)
+{
+    AddressBook_add(&testBook, "Test Name", "test@example.com", 1234);
+    AddressBook_remove(&testBook, "Test Name", "test@example.com", 1234);
+    TEST_ASSERT_TRUE(AddressBook_isEmpty(&testBook));
+}
+
+// Test finding a contact
+void test_AddressBook_find(void)
+{
+    AddressBook_add(&testBook, "Test Name", "test@example.com", 1234);
+    struct Node* node = AddressBook_find(&testBook, "Test Name", "test@example.com", 1234);
+    TEST_ASSERT_NOT_NULL(node);
+
+    // Test finding a non-existent contact
+    node = AddressBook_find(&testBook, "Not Exist", "none@example.com", 5678);
+    TEST_ASSERT_NULL(node);
+}
+
+void UnityTest()
+{
+    UNITY_BEGIN();
+
+    RUN_TEST(test_AddressBook_init);
+    RUN_TEST(test_AddressBook_add);
+    RUN_TEST(test_AddressBook_remove);
+    RUN_TEST(test_AddressBook_find);
+
+    return UNITY_END();
+}
+
+/*
+ * END OF UNITY TEST
+ */
+
+int main() {
+    /*
+    // MENU INTERFACE, UNUSED IF WE ARE UNIT TESTING
+    struct AddressBook myBook;
     menu(&myBook); // feed address
+    */
+
+    UnityTest();
+
+
+    // Legacy code used for testing
     /*
     AddressBook_init(&myBook);
 

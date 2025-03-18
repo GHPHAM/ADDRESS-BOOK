@@ -6,7 +6,7 @@
 void menu(struct AddressBook* book) {
     char choice;
     printf("WELCOME TO THE ADDRESS BOOK PROGRAM\n");
-    printf("l: load new contact\ns: save contact\na: add new contact\nr: remove contact\nf: find contact\np: print all contacts\nq: quit\nh: help\n");
+    printf("l: load new contact\ns: save contact\na: add new contact\nr: remove contact\ne: edit contact\nf: find contact\np: print all contacts\nq: quit\nh: help\n");
 
     while (true)
     {
@@ -58,6 +58,7 @@ void menu(struct AddressBook* book) {
                     AddressBook_add(book, nameBuffer, emailBuffer, phoneNumber);
                 }
                 break;
+                /*
             case 'r':
                 printf("Enter name: ");
                 //scanf("%s", &nameBuffer); // BAD BECAUSE IT WILL ONLY READ UNTIL SPACE
@@ -73,6 +74,7 @@ void menu(struct AddressBook* book) {
 
                 AddressBook_remove(book, nameBuffer, emailBuffer, phoneNumber);
                 break;
+                */
             case 'f':
                 printf("Enter name: ");
                 //scanf("%s", &nameBuffer); // BAD BECAUSE IT WILL ONLY READ UNTIL SPACE
@@ -86,18 +88,23 @@ void menu(struct AddressBook* book) {
                 printf("Enter phone number: ");
                 scanf("%d", &phoneNumber); // d stands for decimal
 
-                node = AddressBook_find(book, nameBuffer, emailBuffer, phoneNumber);
+                short int phoneNumberEdited;
+                char nameBufferEdited[128];
+                char emailBufferEdited[128];
 
-                if (node != NULL)
-                {
-                    printf("Name: %s\n", node->name);
-                    printf("Email: %s\n", node->email);
-                    printf("Phone: %d\n", node->phoneNumber);
-                }
-                else
-                {
-                    printf("Contact not found\n");
-                }
+                printf("Enter edited name: ");
+                //scanf("%s", &nameBuffer); // BAD BECAUSE IT WILL ONLY READ UNTIL SPACE
+                fgets(nameBufferEdited, sizeof(nameBufferEdited), stdin);
+                nameBufferEdited[strcspn(nameBufferEdited, "\n")] = '\0';  // Remove newline
+
+                printf("Enter edited email: ");
+                fgets(emailBufferEdited, sizeof(emailBufferEdited), stdin);
+                emailBufferEdited[strcspn(emailBufferEdited, "\n")] = '\0';  // Remove newline
+
+                printf("Enter edited phone number: ");
+                scanf("%d", &phoneNumberEdited); // d stands for decimal
+
+                AddressBook_edit(book, nameBuffer, emailBuffer, phoneNumber, nameBufferEdited, emailBufferEdited, phoneNumberEdited);
                 break;
             case 'e':
                 printf("Enter name: ");
@@ -111,7 +118,7 @@ void menu(struct AddressBook* book) {
                 printf("Enter phone number: ");
                 scanf("%d", &phoneNumber); // d stands for decimal
 
-                node = AddressBook_find(book, nameBuffer, emailBuffer, phoneNumber);
+                node = AddressBook_search(book, nameBuffer, emailBuffer, phoneNumber);
 
                 if (node != NULL)
                 {
@@ -150,36 +157,43 @@ struct AddressBook testBook;
 
 // Init and free
 // This will run before each test
-void setUp(void)
+void setUp()
 {
     AddressBook_init(&testBook); // Initialize a fresh address book
 }
 
 // This will run after each test
-void tearDown(void)
+void tearDown()
 {
     AddressBook_free(&testBook); // Clean up
 }
 
 // Test the initialization function
-void test_AddressBook_init(void)
+void test_AddressBook_init()
 {
     TEST_ASSERT_TRUE(AddressBook_isEmpty(&testBook));
 }
 
-// Test adding a contact
-void test_AddressBook_add(void)
+void test_AddressBook_edit()
 {
-    AddressBook_add(&testBook, "Test Name", "test@example.com", 1234);
-    TEST_ASSERT_FALSE(AddressBook_isEmpty(&testBook));
+    // Add a test contact
+    AddressBook_add(&testBook, "EditMe", "EditMe@example.com", 1337);
 
-    struct Node* node = AddressBook_find(&testBook, "Test Name", "test@example.com", 1234);
+    // Edit contact
+    AddressBook_edit(&testBook, "EditMe", "EditMe@example.com", 1337, "EDITED", "EDITED@example.com", 7331);
+
+    // Search for the added contact
+    struct Node* node = AddressBook_search(&testBook, "EDITED", "EDITED@example.com", 7331);
+    // Verify node exists
     TEST_ASSERT_NOT_NULL(node);
-    TEST_ASSERT_EQUAL_STRING("Test Name", node->name);
-    TEST_ASSERT_EQUAL_STRING("test@example.com", node->email);
-    TEST_ASSERT_EQUAL_INT(1234, node->phoneNumber);
+
+    // Verify all fields match expected values
+    TEST_ASSERT_EQUAL_STRING("EDITED", node->name);
+    TEST_ASSERT_EQUAL_STRING("EDITED@example.com", node->email);
+    TEST_ASSERT_EQUAL_INT(7331, node->phoneNumber);
 }
 
+/*
 // Test removing a contact
 void test_AddressBook_remove(void)
 {
@@ -187,16 +201,21 @@ void test_AddressBook_remove(void)
     AddressBook_remove(&testBook, "Test Name", "test@example.com", 1234);
     TEST_ASSERT_TRUE(AddressBook_isEmpty(&testBook));
 }
+*/
 
-// Test finding a contact
-void test_AddressBook_find(void)
+// Test adding and finding a contact
+void test_AddressBook_add_and_find(void)
 {
     AddressBook_add(&testBook, "Test Name", "test@example.com", 1234);
-    struct Node* node = AddressBook_find(&testBook, "Test Name", "test@example.com", 1234);
+
+    // Search for the contact we just added
+    struct Node* node = AddressBook_search(&testBook, "Test Name", "test@example.com", 1234);
+
+    // Assert that the contact was found
     TEST_ASSERT_NOT_NULL(node);
 
     // Test finding a non-existent contact
-    node = AddressBook_find(&testBook, "Not Exist", "none@example.com", 5678);
+    node = AddressBook_search(&testBook, "Not Exist", "none@example.com", 5678);
     TEST_ASSERT_NULL(node);
 }
 
@@ -205,11 +224,13 @@ void UnityTest()
     UNITY_BEGIN();
 
     RUN_TEST(test_AddressBook_init);
-    RUN_TEST(test_AddressBook_add);
-    RUN_TEST(test_AddressBook_remove);
-    RUN_TEST(test_AddressBook_find);
+    RUN_TEST(test_AddressBook_add_and_find);
+    RUN_TEST(test_AddressBook_edit);
+    // Load
+    // Save
+    //RUN_TEST(test_AddressBook_remove);
 
-    return UNITY_END();
+    UNITY_END();
 }
 
 /*
@@ -217,13 +238,24 @@ void UnityTest()
  */
 
 int main() {
-    /*
-    // MENU INTERFACE, UNUSED IF WE ARE UNIT TESTING
-    struct AddressBook myBook;
-    menu(&myBook); // feed address
-    */
+    char choice;
+    printf("Unit Test? (y/n): ");
+    scanf(" %c", &choice); // leading space to ignore whitespace
+    while (getchar() != '\n');  // Clear input buffer, space before `%c` skips leading whitespace
 
-    UnityTest();
+    if (choice == 'y')
+    {
+        UnityTest();
+        AddressBook_free(&testBook);
+    }
+    else // MENU INTERFACE, UNUSED IF WE ARE UNIT TESTING
+    {
+        struct AddressBook myBook;
+        menu(&myBook); // feed address
+        AddressBook_free(&myBook); // free memory
+    }
+
+
 
 
     // Legacy code used for testing

@@ -1,29 +1,40 @@
 #include "addressbook.h"
+#include "LinkedList.h"
 #include <stdio.h>
 
 void menu(struct AddressBook* book) {
     char choice;
     printf("WELCOME TO THE ADDRESS BOOK PROGRAM\n");
-    printf("l: load new contact\ns: save contact\na: add new contact\nr: remove contact\np: print all contacts\nq: quit\nh: help\n");
+    printf("l: load new contact\ns: save contact\na: add new contact\nr: remove contact\nf: find contact\np: print all contacts\nq: quit\nh: help\n");
 
     while (true)
     {
         printf("Enter your choice: ");
         scanf(" %c", &choice); // leading space to ignore whitespace
         while (getchar() != '\n');  // Clear input buffer, space before `%c` skips leading whitespace
+        char fileBuffer[128];
+        char nameBuffer[128];
+        char emailBuffer[128];
+        short int phoneNumber;
+        struct Node* node;
 
         switch (choice)
         {
             case 'l':
-                // Load contact funct here
+                printf("Enter file name/directory: ");
+                fgets(fileBuffer, sizeof(fileBuffer), stdin);
+                fileBuffer[strcspn(fileBuffer, "\n")] = '\0';  // Remove newline
+
+                //AddressBook_load(book, fileBuffer); // uncomment when implemented
                 break;
             case 's':
-                // Save contact funct here
+                printf("Enter file name/directory: ");
+                fgets(fileBuffer, sizeof(fileBuffer), stdin);
+                fileBuffer[strcspn(fileBuffer, "\n")] = '\0';  // Remove newline
+
+                //AddressBook_save(book, fileBuffer); // uncomment when implemented
                 break;
             case 'a':
-                char nameBuffer[128];
-                char emailBuffer[128];
-                short int phoneNumber;
                 printf("Enter name: ");
                 //scanf("%s", &nameBuffer); // BAD BECAUSE IT WILL ONLY READ UNTIL SPACE
                 fgets(nameBuffer, sizeof(nameBuffer), stdin);
@@ -47,13 +58,78 @@ void menu(struct AddressBook* book) {
                 }
                 break;
             case 'r':
-                // Remove contact funct here
+                printf("Enter name: ");
+                //scanf("%s", &nameBuffer); // BAD BECAUSE IT WILL ONLY READ UNTIL SPACE
+                fgets(nameBuffer, sizeof(nameBuffer), stdin);
+                nameBuffer[strcspn(nameBuffer, "\n")] = '\0';  // Remove newline
+
+                printf("Enter email: ");
+                fgets(emailBuffer, sizeof(emailBuffer), stdin);
+                emailBuffer[strcspn(emailBuffer, "\n")] = '\0';  // Remove newline
+
+                printf("Enter phone number: ");
+                scanf("%d", &phoneNumber); // d stands for decimal
+
+                AddressBook_remove(book, nameBuffer, emailBuffer, phoneNumber);
+                break;
+            case 'f':
+                printf("Enter name: ");
+                //scanf("%s", &nameBuffer); // BAD BECAUSE IT WILL ONLY READ UNTIL SPACE
+                fgets(nameBuffer, sizeof(nameBuffer), stdin);
+                nameBuffer[strcspn(nameBuffer, "\n")] = '\0';  // Remove newline
+
+                printf("Enter email: ");
+                fgets(emailBuffer, sizeof(emailBuffer), stdin);
+                emailBuffer[strcspn(emailBuffer, "\n")] = '\0';  // Remove newline
+
+                printf("Enter phone number: ");
+                scanf("%d", &phoneNumber); // d stands for decimal
+
+                node = AddressBook_find(book, nameBuffer, emailBuffer, phoneNumber);
+
+                if (node != NULL)
+                {
+                    printf("Name: %s\n", node->name);
+                    printf("Email: %s\n", node->email);
+                    printf("Phone: %d\n", node->phoneNumber);
+                }
+                else
+                {
+                    printf("Contact not found\n");
+                }
+                break;
+            case 'e':
+                printf("Enter name: ");
+                fgets(nameBuffer, sizeof(nameBuffer), stdin);
+                nameBuffer[strcspn(nameBuffer, "\n")] = '\0';  // Remove newline
+
+                printf("Enter email: ");
+                fgets(emailBuffer, sizeof(emailBuffer), stdin);
+                emailBuffer[strcspn(emailBuffer, "\n")] = '\0';  // Remove newline
+
+                printf("Enter phone number: ");
+                scanf("%d", &phoneNumber); // d stands for decimal
+
+                node = AddressBook_find(book, nameBuffer, emailBuffer, phoneNumber);
+
+                if (node != NULL)
+                {
+                    printf("Name: %s\n", node->name);
+                    printf("Email: %s\n", node->email);
+                    printf("Phone: %d\n", node->phoneNumber);
+                }
+                else
+                {
+                    printf("Contact not found\n");
+                    break;
+                }
                 break;
             case 'p':
                 AddressBook_print(book);
                 break;
             case 'q':
                 printf("Have a nice day :)\n\n");
+                AddressBook_free(book);
                 return;
             case 'h':
                 printf("l: load new contact\ns: save contact\na: add new contact\nr: remove contact\np: print all contacts\nq: quit\nh: help\n");\

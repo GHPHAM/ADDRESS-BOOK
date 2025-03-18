@@ -42,6 +42,11 @@ void AddressBook_free(struct AddressBook* book);
 
 bool AddressBook_isEmpty(struct AddressBook* book);
 
+// Load and Save
+void AddressBook_load(struct AddressBook *book, char* fileName);
+void AddressBook_save(struct AddressBook *book, char* fileName);
+
+
 // Ultilities
 int strcmp(const char* str1, const char* str2);
 long long unsigned int strcspn(const char *s, const char *reject);

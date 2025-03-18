@@ -89,6 +89,11 @@ void AddressBook_edit(struct AddressBook* book, char* name, char* email, int pho
 }
 
 void AddressBook_print(struct AddressBook* book) {
+    if (AddressBook_isEmpty(book))
+    {
+        printf("Address Book is empty\n");
+        return;
+    }
     struct Node* current = book->head;
     printf("Address Book Entries:\n");
     printf("--------------------\n");

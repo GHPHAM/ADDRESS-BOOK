@@ -24,18 +24,18 @@ void AddressBook_add(struct AddressBook* book, char* name, char* email, short in
  * At first I wanted to only look for name, but then there are some people with the same name,
  * so I think a phone number works better
 */
-void AddressBook_remove(struct AddressBook* book, short int phoneNumber);
+void AddressBook_remove(struct AddressBook* book, char* name, char* email, short int phoneNumber);
 
 /* find
  * If there's more people with the name name, just print them all!
 */
-void AddressBook_find(struct AddressBook* book, char* name);
+struct Node* AddressBook_find(struct AddressBook* book, char* name, char* email, short int phoneNumber);
 
 // print
 void AddressBook_print(struct AddressBook* book);
 
 // cleanup
-void AddressBook_cleanup(struct AddressBook* book);
+void AddressBook_free(struct AddressBook* book);
 
 bool AddressBook_isEmpty(struct AddressBook* book);
 

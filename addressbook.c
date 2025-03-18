@@ -114,29 +114,72 @@ bool AddressBook_isEmpty(struct AddressBook* book)
     return false;
 }
 
-void AddressBook_load(struct AddressBook *book)
+void AddressBook_load(struct AddressBook *book, char* fileName)
 {
-	FILE *fp = fopen("address_book.csv", "r"); // Checks file existence
-    	if (fp == NULL)
+	FILE *fp = fopen(fileName, "r"); // Checks file existence
+    if (fp == NULL)
 	{
-		perror("Error opening file");
-        FILE *fp = fopen("address_book.csv", "w") // Creates the file if file doesn't exist
-		return 1;
-	}
-	else
-	{
-		/* Create a file for adding entries */
-		FILE *fp = fopen("address_book.csv", "a") // Append mode
-
-		fprintf(*fp, "%d, %c, %c\n", book->head->phoneNumber, book->head->name, book->head->email);
-
-		fclose(fp);
+        fp = fopen(fileName, "w"); // Creates the file if file doesn't exist
+        fclose(fp); // Close the file, since the file is newly created, and thus has no data
+        return; // Promptly return, duh.
+        printf("NO FILE UNDER THE NAME OF %s DETECTED. NEW FILE CREATED.", fileName);
 	}
 
-	return 0;
+    // Read the file
+    char buffer[256];
+    char name[100];
+    char email[100];
+    char phoneNumber[20];
+
+    // I'll not parse with functions from <String.h>
+    // Loop through the file and use AddressBook_add
+    while (fgets(buffer, sizeof(buffer), fp))
+    {
+        short int field_index = 0;
+        int i = 0, j = 0;
+        bool in_quotes = 0;
+
+        // Initialize fields
+        name[0] = '\0';
+        email[0] = '\0';
+        phoneNumber[0] = '\0';
+
+        char *currentField = name; // Start with name field
+
+        while (buffer[i] != '\0' && buffer[i] != '\n' && buffer[i] != '\r')
+        {
+            if (buffer[i] == '"')
+                in_quotes = !in_quotes;
+            else if (buffer[i] == ',' && !in_quotes)
+            {
+                // End of field
+                currentField[j] = '\0';
+                j = 0;
+                ++field_index;
+
+                // Switch to next field
+                if (field_index == 1)
+                    currentField = email;
+                else if (field_index == 2)
+                    currentField = phoneNumber;
+            }
+            else
+                currentField[++j] = buffer[i];
+
+            ++i;
+        }
+
+        // Make sure the last field is null-terminated
+        currentField[j] = '\0';
+
+        // Add the contact to the address book
+        AddressBook_add(book, name, email, phoneNumber);
+    }
+
+    fclose(fp);
 }
 
-void AddressBook_save(struct AddressBook *book)
+void AddressBook_save(struct AddressBook *book, char* fileName)
 {
 	/*
 	 * Write contacts back to file.

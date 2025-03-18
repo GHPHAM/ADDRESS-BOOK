@@ -59,6 +59,56 @@ void AddressBook_print(struct AddressBook* book) {
     }
 }
 
+void AddressBook_load(struct AddressBook *book)
+{
+	FILE *fp = fopen("address_book.csv", "r"); // Checks file existence
+    	if (fp == NULL) 
+	{
+		perror("Error opening file");
+        FILE *fp = fopen("address_book.csv", "w") // Creates the file if file doesn't exist
+		return 1;
+	}
+	else
+	{
+		/* Create a file for adding entries */
+		FILE *fp = fopen("address_book.csv", "a") // Append mode
+
+		fprintf(*fp, "%d, %c, %c\n", book->head->phoneNumber, book->head->name, book->head->email);
+
+		fclose(fp);
+	}
+
+	return 0;
+}
+
+void AddressBook_save(struct AddressBook *book)
+{
+	/*
+	 * Write contacts back to file.
+	 * Re write the complete file currently
+	 */ 
+	FILE *fp = fopen("address_book.csv", "w");
+
+	fwrite(book->head->phoneNumber, sizeof(int), 32, fp);
+  	fwrite(book->head->name, sizeof(char), 32, fp);
+  	fwrite(book->head->email, sizeof(char), 32, fp);
+
+	if (fp == NULL)
+	{
+		perror("Error opening file");
+		return 1;
+	}
+
+	/* 
+	 * Add the logic to save the file
+	 * Make sure to do error handling
+	 */ 
+
+	fclose(fp);
+
+	return 0;
+}
+
 /* ultility */
 
 /* Since we can't use the library cstring, we have to implement it ourselves.

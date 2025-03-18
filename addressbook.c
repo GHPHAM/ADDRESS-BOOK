@@ -7,17 +7,17 @@ void AddressBook_init(struct AddressBook* book)
     book->head = NULL;
 }
 
-void AddressBook_init_with_entry(struct AddressBook* book, char* name, char* email, short int phoneNumber)
+void AddressBook_init_with_entry(struct AddressBook* book, char* name, char* email, int phoneNumber)
 {
     book->head = NULL;
     AddressBook_add(book, name, email, phoneNumber);
 }
 
-void AddressBook_add(struct AddressBook* book, char* name, char* email, short int phoneNumber)
+void AddressBook_add(struct AddressBook* book, char* name, char* email, int phoneNumber)
 {
     struct Node* node = (struct Node*)malloc(sizeof(struct Node));
-    node->name = name;
-    node->email = email;
+    node->name = strdup(name);
+    node->email = strdup(email);
     node->phoneNumber = phoneNumber;
     node->next = NULL;
 
@@ -40,11 +40,12 @@ void AddressBook_add(struct AddressBook* book, char* name, char* email, short in
     current->next = node;
 }
 
-void AddressBook_search(struct AddressBook* book, char* name, char* email, short int phoneNumber)
+struct Node* AddressBook_search(struct AddressBook* book, char* name, char* email, int phoneNumber)
 {
-    struct Node* node = book->head;
+    struct Node* current = book->head;
     while(current != NULL)
         {
+            // This will not work if there's more than one person with the same name
             if((name && strcmp(current->name, name) == 0) ||
                 (email && strcmp(current->email, email) == 0) ||
                 (phoneNumber != -1 && current->phoneNumber == phoneNumber))
@@ -71,14 +72,15 @@ void AddressBook_free(struct AddressBook* book)
     book->head = NULL;
 }
 
-void AddressBook_edit(struct AddressBook* book, char* name, char* email, short int phoneNumber)
+void AddressBook_edit(struct AddressBook* book, char* name, char* email, int phoneNumber,char* newName, char* newEmail, int newPhoneNumber)
 {
-    struct Node* node = AddressBook_search(book, name);
+    struct Node* node = AddressBook_search(book, name, email, phoneNumber);
         if(node != NULL)
         {
-            free(node->email);
-            node->email = strdup(new_email);
-            node->phoneNumber = new_phoneNumber;
+            //free(node->email); // what the fuck is this for? We're not deleting anything
+            node->name = strdup(newName);
+            node->email = strdup(newEmail);
+            node->phoneNumber = newPhoneNumber;
         }
         else
         {
@@ -149,4 +151,20 @@ size_t strcspn(const char *s, const char *reject) {
     }
 
     return i;
+}
+
+char *strdup(char *src)
+{
+    char *str;
+    char *p;
+    int len = 0;
+
+    while (src[len])
+        len++;
+    str = malloc(len + 1);
+    p = str;
+    while (*src)
+        *p++ = *src++;
+    *p = '\0';
+    return str;
 }

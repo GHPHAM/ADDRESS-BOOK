@@ -8,10 +8,11 @@
 
 #include "address_book.h"
 
-Status load_file(AddressBook *address_book)
-(
+Status load_file(AddressBook *address_book) 
+{
+
 	address_book->fp = fopen(DEFAULT_FILE, "r"); // Checks file existence
-    	if (fp == NULL) 
+    	if (address_book->fp == NULL) 
 	{
 		address_book->fp = fopen(DEFAULT_FILE, "w") // Creates the file if file doesn't exist
 		perror("Error opening file");

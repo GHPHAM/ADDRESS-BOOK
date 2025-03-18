@@ -26,14 +26,14 @@ void menu(struct AddressBook* book) {
                 fgets(fileBuffer, sizeof(fileBuffer), stdin);
                 fileBuffer[strcspn(fileBuffer, "\n")] = '\0';  // Remove newline
 
-                //AddressBook_load(book, fileBuffer); // uncomment when implemented
+                AddressBook_load(book, fileBuffer); // uncomment when implemented
                 break;
             case 's':
                 printf("Enter file name/directory: ");
                 fgets(fileBuffer, sizeof(fileBuffer), stdin);
                 fileBuffer[strcspn(fileBuffer, "\n")] = '\0';  // Remove newline
 
-                //AddressBook_save(book, fileBuffer); // uncomment when implemented
+                AddressBook_save(book, fileBuffer); // uncomment when implemented
                 break;
             case 'a':
                 printf("Enter name: ");

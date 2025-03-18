@@ -116,13 +116,14 @@ bool AddressBook_isEmpty(struct AddressBook* book)
 
 void AddressBook_load(struct AddressBook *book, char* fileName)
 {
+    printf("READING FILE...\n");
 	FILE *fp = fopen(fileName, "r"); // Checks file existence
     if (fp == NULL)
 	{
         fp = fopen(fileName, "w"); // Creates the file if file doesn't exist
         fclose(fp); // Close the file, since the file is newly created, and thus has no data
-        return; // Promptly return, duh.
         printf("NO FILE UNDER THE NAME OF %s DETECTED. NEW FILE CREATED.", fileName);
+        return; // Promptly return, duh.
 	}
 
     // Read the file
@@ -130,6 +131,7 @@ void AddressBook_load(struct AddressBook *book, char* fileName)
     char name[100];
     char email[100];
     char phoneNumber[20];
+    bool isFirst = true;
 
     // I'll not parse with functions from <String.h>
     // Loop through the file and use AddressBook_add
@@ -137,7 +139,6 @@ void AddressBook_load(struct AddressBook *book, char* fileName)
     {
         short int field_index = 0;
         int i = 0, j = 0;
-        bool in_quotes = 0;
 
         // Initialize fields
         name[0] = '\0';
@@ -145,12 +146,10 @@ void AddressBook_load(struct AddressBook *book, char* fileName)
         phoneNumber[0] = '\0';
 
         char *currentField = name; // Start with name field
-
+        printf("HERE...\n");
         while (buffer[i] != '\0' && buffer[i] != '\n' && buffer[i] != '\r')
         {
-            if (buffer[i] == '"')
-                in_quotes = !in_quotes;
-            else if (buffer[i] == ',' && !in_quotes)
+            if (buffer[i] == ',')
             {
                 // End of field
                 currentField[j] = '\0';
@@ -164,16 +163,24 @@ void AddressBook_load(struct AddressBook *book, char* fileName)
                     currentField = phoneNumber;
             }
             else
-                currentField[++j] = buffer[i];
+                currentField[j] = buffer[i];
 
             ++i;
+            ++j;
         }
 
         // Make sure the last field is null-terminated
         currentField[j] = '\0';
 
+        // BUG: PHONE NUMBER ISN'T PARSED CORRECTLY
         // Add the contact to the address book
-        AddressBook_add(book, name, email, phoneNumber);
+        if(isFirst)
+        {
+            AddressBook_init_with_entry(book, name, email, atoi(phoneNumber));
+            isFirst = false;
+        }
+        else
+            AddressBook_add(book, name, email, atoi(phoneNumber));
     }
 
     fclose(fp);

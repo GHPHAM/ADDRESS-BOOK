@@ -46,9 +46,9 @@ struct Node* AddressBook_search(struct AddressBook* book, char* name, char* emai
     while(current != NULL)
         {
             // This will not work if there's more than one person with the same name
-            if((name && strcmp(current->name, name) == 0) ||
-                (email && strcmp(current->email, email) == 0) ||
-                (phoneNumber != -1 && current->phoneNumber == phoneNumber))
+            if((!name || strcmp(current->name, name) == 0) &&
+                (!email || strcmp(current->email, email) == 0) &&
+                (phoneNumber == -1 && current->phoneNumber == phoneNumber))
             {
                 return current;
             }
@@ -57,19 +57,19 @@ struct Node* AddressBook_search(struct AddressBook* book, char* name, char* emai
     return NULL;
 }
 
-void AddressBook_free(struct AddressBook* book)
+void AddressBook_edit(struct AddressBook* book, char* name, char* email, int phoneNumber,char* newName, char* newEmail, int newPhoneNumber)
 {
-    struct Node* current = book->head;
-    struct Node* temp;
-    while(current != NULL)
+    struct Node* node = AddressBook_search(book, name, email, phoneNumber);
+        if(node != NULL)
         {
-            temp = current;
-            current = current->next;
-            free(temp->name);
-            free(temp->email);
-            free(temp);
+            node->name = strdup(newName);
+            node->email = strdup(newEmail);
+            node->phoneNumber = newPhoneNumber;
         }
-    book->head = NULL;
+        else
+        {
+            printf("Entry not found: %s\n", name);
+        }
 }
 
 void AddressBook_edit(struct AddressBook* book, char* name, char* email, int phoneNumber,char* newName, char* newEmail, int newPhoneNumber)
@@ -77,7 +77,6 @@ void AddressBook_edit(struct AddressBook* book, char* name, char* email, int pho
     struct Node* node = AddressBook_search(book, name, email, phoneNumber);
         if(node != NULL)
         {
-            //free(node->email); // what the fuck is this for? We're not deleting anything
             node->name = strdup(newName);
             node->email = strdup(newEmail);
             node->phoneNumber = newPhoneNumber;

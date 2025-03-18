@@ -181,30 +181,29 @@ void AddressBook_load(struct AddressBook *book, char* fileName)
 
 void AddressBook_save(struct AddressBook *book, char* fileName)
 {
-	/*
-	 * Write contacts back to file.
-	 * Re write the complete file currently
-	 */
-	FILE *fp = fopen("address_book.csv", "w");
+	FILE *fp = fopen(fileName, "w");
+    if (fp == NULL)
+    {
+        printf("ERROR OPENING FILE\n");
+        return;
+    }
+    struct Node* current = book->head;
+    if (current == NULL) {
+        printf("(Empty address book)\n");
+        fclose(fp); // Close the file since we can't write anything
+        return;
+    }
 
-	fwrite(book->head->phoneNumber, sizeof(int), 32, fp);
-  	fwrite(book->head->name, sizeof(char), 32, fp);
-  	fwrite(book->head->email, sizeof(char), 32, fp);
+    while (current != NULL)
+    {
+        fprintf(fp, "%s,", current->name);
+        fprintf(fp, "%s,", current->email);
+        fprintf(fp, "%d\n", current->phoneNumber);
 
-	if (fp == NULL)
-	{
-		perror("Error opening file");
-		return 1;
-	}
+        current = current->next;
+    }
 
-	/*
-	 * Add the logic to save the file
-	 * Make sure to do error handling
-	 */
-
-	fclose(fp);
-
-	return 0;
+    fclose(fp);
 }
 
 /* ultility */

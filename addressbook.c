@@ -72,6 +72,34 @@ void AddressBook_edit(struct AddressBook* book, char* name, char* email, int pho
         }
 }
 
+void AddressBook_delete(struct AddressBook* book, char* name, char* email, int phoneNumber) 
+{
+    struct Node* current = book->head;
+    struct Node* prev = NULL;
+
+    while(current != NULL)
+    {
+        if((!name || strcmp(current->name, name) == 0) &&
+            (!email || strcmp(current->email, email) == 0) &&
+            (phoneNumber == -1 || current->phoneNumber == phoneNumber)) 
+            {
+                if (prev == NULL) 
+                {
+                    book->head = current->next;
+                }
+                else
+                {
+                    prev->next = current->next;
+                }
+                printf("Deleted contact: %s\n", name);
+                return;
+            } 
+        prev = current;
+        current = current->next;
+    }
+    printf("No matching contact found for deletion: %s\n", name);
+}
+
 void AddressBook_print(struct AddressBook* book) {
     struct Node* current = book->head;
     printf("Address Book Entries:\n");

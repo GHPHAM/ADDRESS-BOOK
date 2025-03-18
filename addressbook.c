@@ -72,21 +72,6 @@ void AddressBook_edit(struct AddressBook* book, char* name, char* email, int pho
         }
 }
 
-void AddressBook_edit(struct AddressBook* book, char* name, char* email, int phoneNumber,char* newName, char* newEmail, int newPhoneNumber)
-{
-    struct Node* node = AddressBook_search(book, name, email, phoneNumber);
-        if(node != NULL)
-        {
-            node->name = strdup(newName);
-            node->email = strdup(newEmail);
-            node->phoneNumber = newPhoneNumber;
-        }
-        else
-        {
-            printf("Entry not found: %s\n", name);
-        }
-}
-
 void AddressBook_print(struct AddressBook* book) {
     struct Node* current = book->head;
     printf("Address Book Entries:\n");

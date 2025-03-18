@@ -45,10 +45,9 @@ struct Node* AddressBook_search(struct AddressBook* book, char* name, char* emai
     struct Node* current = book->head;
     while(current != NULL)
         {
-            // This will not work if there's more than one person with the same name
-            if((name && strcmp(current->name, name) == 0) ||
-                (email && strcmp(current->email, email) == 0) ||
-                (phoneNumber != -1 && current->phoneNumber == phoneNumber))
+            if((!name || strcmp(current->name, name) == 0) &&
+                (!email || strcmp(current->email, email) == 0) &&
+                (phoneNumber == -1 && current->phoneNumber == phoneNumber))
             {
                 return current;
             }
@@ -57,27 +56,11 @@ struct Node* AddressBook_search(struct AddressBook* book, char* name, char* emai
     return NULL;
 }
 
-void AddressBook_free(struct AddressBook* book)
-{
-    struct Node* current = book->head;
-    struct Node* temp;
-    while(current != NULL)
-        {
-            temp = current;
-            current = current->next;
-            free(temp->name);
-            free(temp->email);
-            free(temp);
-        }
-    book->head = NULL;
-}
-
 void AddressBook_edit(struct AddressBook* book, char* name, char* email, int phoneNumber,char* newName, char* newEmail, int newPhoneNumber)
 {
     struct Node* node = AddressBook_search(book, name, email, phoneNumber);
-        if(node != NULL)
+    if(node != NULL)
         {
-            //free(node->email); // what the fuck is this for? We're not deleting anything
             node->name = strdup(newName);
             node->email = strdup(newEmail);
             node->phoneNumber = newPhoneNumber;
@@ -86,6 +69,40 @@ void AddressBook_edit(struct AddressBook* book, char* name, char* email, int pho
         {
             printf("Entry not found: %s\n", name);
         }
+}
+
+void AddressBook_delete(struct AddressBook* book, char* name, char*email, int phoneNumber)
+{
+    struct Node* target = AddressBook_searh(book, name, email, phoneNumber);
+
+    if(target == NULL)
+    {
+        printf("No matching contact found for deletion: %s\n", name);
+        return;
+    }
+
+    struct Node* current = book->head;
+    struct Node* prev = Null;
+
+    while(current != NULL)
+    {
+        if(current == target)
+        {
+            if(prev == NULL)
+            {
+                book->head = current->next;
+            }
+            else
+            {
+                prev->next = current->next;
+            }
+
+            printf("Deleted contact: %s\n", name);
+            return;
+        }    
+        prev = current;
+        current = current->net;
+    }
 }
 
 void AddressBook_print(struct AddressBook* book) {

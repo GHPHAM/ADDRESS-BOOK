@@ -97,6 +97,9 @@ void AddressBook_delete(struct AddressBook* book, char* name, char*email, int ph
                 prev->next = current->next;
             }
 
+            free(current->name);
+            free(current->email);
+            free(current);
             printf("Deleted contact: %s\n", name);
             return;
         }    

@@ -82,7 +82,7 @@ void AddressBook_delete(struct AddressBook* book, char* name, char*email, int ph
     }
 
     struct Node* current = book->head;
-    struct Node* prev = Null;
+    struct Node* prev = NULL;
 
     while(current != NULL)
     {
@@ -102,9 +102,9 @@ void AddressBook_delete(struct AddressBook* book, char* name, char*email, int ph
             free(current);
             printf("Deleted contact: %s\n", name);
             return;
-        }    
+        }
         prev = current;
-        current = current->net;
+        current = current->next;
     }
 }
 

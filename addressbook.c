@@ -108,6 +108,21 @@ void AddressBook_delete(struct AddressBook* book, char* name, char*email, int ph
     }
 }
 
+void AddressBook_free(struct AddressBook* book)
+{
+    struct Node* current = book->head;
+    struct Node* temp;
+    while(current != NULL)
+        {
+            temp = current;
+            current = current->next;
+            free(temp->name);
+            free(temp->email);
+            free(temp);
+        }
+    book->head = NULL;
+}
+
 void AddressBook_print(struct AddressBook* book) {
     struct Node* current = book->head;
     printf("Address Book Entries:\n");

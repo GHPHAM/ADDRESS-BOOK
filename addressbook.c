@@ -45,9 +45,9 @@ struct Node* AddressBook_search(struct AddressBook* book, char* name, char* emai
     struct Node* current = book->head;
     while(current != NULL)
         {
-            if((!name || strcmp(current->name, name) == 0) &&
-                (!email || strcmp(current->email, email) == 0) &&
-                (phoneNumber == -1 && current->phoneNumber == phoneNumber))
+            if((name && strcmp(current->name, name) == 0) ||
+                (email && strcmp(current->email, email) == 0) ||
+                (phoneNumber != -1 && current->phoneNumber == phoneNumber))
             {
                 return current;
             }
@@ -73,7 +73,7 @@ void AddressBook_edit(struct AddressBook* book, char* name, char* email, int pho
 
 void AddressBook_delete(struct AddressBook* book, char* name, char*email, int phoneNumber)
 {
-    struct Node* target = AddressBook_searh(book, name, email, phoneNumber);
+    struct Node* target = AddressBook_search(book, name, email, phoneNumber);
 
     if(target == NULL)
     {
@@ -108,18 +108,19 @@ void AddressBook_delete(struct AddressBook* book, char* name, char*email, int ph
     }
 }
 
+// actually behave more like dropping the whole database. I'll let it slide for now
 void AddressBook_free(struct AddressBook* book)
 {
     struct Node* current = book->head;
     struct Node* temp;
     while(current != NULL)
-        {
-            temp = current;
-            current = current->next;
-            free(temp->name);
-            free(temp->email);
-            free(temp);
-        }
+    {
+        temp = current;
+        current = current->next;
+        free(temp->name);
+        free(temp->email);
+        free(temp);
+    }
     book->head = NULL;
 }
 
@@ -156,7 +157,7 @@ bool AddressBook_isEmpty(struct AddressBook* book)
 
 void AddressBook_load(struct AddressBook *book, char* fileName)
 {
-    printf("READING FILE...\n");
+    //printf("READING FILE...\n");
 	FILE *fp = fopen(fileName, "r"); // Checks file existence
     if (fp == NULL)
 	{

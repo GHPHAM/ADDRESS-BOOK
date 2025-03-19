@@ -46,6 +46,9 @@ bool AddressBook_isEmpty(struct AddressBook* book);
 void AddressBook_load(struct AddressBook *book, char* fileName);
 void AddressBook_save(struct AddressBook *book, char* fileName);
 
+// Delete
+void AddressBook_delete(struct AddressBook *book, char* name, char*email, int phoneNumber);
+
 
 // Ultilities
 int strcmp(const char* str1, const char* str2);

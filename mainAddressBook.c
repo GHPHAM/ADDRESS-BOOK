@@ -58,7 +58,6 @@ void menu(struct AddressBook* book) {
                     AddressBook_add(book, nameBuffer, emailBuffer, phoneNumber);
                 }
                 break;
-                /*
             case 'r':
                 printf("Enter name: ");
                 //scanf("%s", &nameBuffer); // BAD BECAUSE IT WILL ONLY READ UNTIL SPACE
@@ -72,9 +71,8 @@ void menu(struct AddressBook* book) {
                 printf("Enter phone number: ");
                 scanf("%d", &phoneNumber); // d stands for decimal
 
-                AddressBook_remove(book, nameBuffer, emailBuffer, phoneNumber);
+                AddressBook_delete(book, nameBuffer, emailBuffer, phoneNumber);
                 break;
-                */
             case 'f':
                 printf("Enter name: ");
                 //scanf("%s", &nameBuffer); // BAD BECAUSE IT WILL ONLY READ UNTIL SPACE
@@ -174,7 +172,31 @@ void test_AddressBook_init()
     TEST_ASSERT_TRUE(AddressBook_isEmpty(&testBook));
 }
 
-void test_AddressBook_edit()
+void test_AddressBook_init_with_entry()
+{
+    struct AddressBook argBook;
+
+    // Init with args
+    AddressBook_init_with_entry(&argBook, "Rainbow Dash", "RD@equestria.horse", 9012);
+
+    // Check if empty, should be false
+    TEST_ASSERT_FALSE(AddressBook_isEmpty(&argBook));
+
+    // Search for the added contact
+    struct Node* node = AddressBook_search(&argBook, "Rainbow Dash", "RD@equestria.horse", 9012);
+
+    // Verify node exists
+    TEST_ASSERT_NOT_NULL(node);
+
+    // Verify all fields match expected values
+    TEST_ASSERT_EQUAL_STRING("Rainbow Dash", node->name);
+    TEST_ASSERT_EQUAL_STRING("RD@equestria.horse", node->email);
+    TEST_ASSERT_EQUAL_INT(9012, node->phoneNumber);
+
+    AddressBook_free(&argBook);
+}
+
+void test_AddressBook_add_and_edit()
 {
     // Add a test contact
     AddressBook_add(&testBook, "EditMe", "EditMe@example.com", 1337);
@@ -191,17 +213,9 @@ void test_AddressBook_edit()
     TEST_ASSERT_EQUAL_STRING("EDITED", node->name);
     TEST_ASSERT_EQUAL_STRING("EDITED@example.com", node->email);
     TEST_ASSERT_EQUAL_INT(7331, node->phoneNumber);
-}
 
-/*
-// Test removing a contact
-void test_AddressBook_remove(void)
-{
-    AddressBook_add(&testBook, "Test Name", "test@example.com", 1234);
-    AddressBook_remove(&testBook, "Test Name", "test@example.com", 1234);
-    TEST_ASSERT_TRUE(AddressBook_isEmpty(&testBook));
+    AddressBook_free(&testBook);
 }
-*/
 
 // Test adding and finding a contact
 void test_AddressBook_add_and_find(void)
@@ -217,6 +231,62 @@ void test_AddressBook_add_and_find(void)
     // Test finding a non-existent contact
     node = AddressBook_search(&testBook, "Not Exist", "none@example.com", 5678);
     TEST_ASSERT_NULL(node);
+
+    AddressBook_free(&testBook);
+}
+
+// Test load and finding a contact
+void test_AddressBook_load_and_find(void)
+{
+    AddressBook_load(&testBook, "input.csv");
+
+    // Search for the contact we just added
+    struct Node* node = AddressBook_search(&testBook, "Pinkie Pie", "Ponka@equestria.horse", 1234);
+
+    // Assert that the contact was found
+    TEST_ASSERT_NOT_NULL(node);
+
+    // Verify all fields match expected values
+    TEST_ASSERT_EQUAL_STRING("Pinkie Pie", node->name);
+    TEST_ASSERT_EQUAL_STRING("Ponka@equestria.horse", node->email);
+    TEST_ASSERT_EQUAL_INT(1234, node->phoneNumber);
+
+    AddressBook_free(&testBook);
+}
+
+// Test load and clearing the book
+void test_AddressBook_load_and_clear(void)
+{
+    AddressBook_load(&testBook, "input.csv");
+
+    // Search for the contact we just added
+    struct Node* node = AddressBook_search(&testBook, "Pinkie Pie", "Ponka@equestria.horse", 1234);
+
+    // Assert that the contact was found
+    TEST_ASSERT_NOT_NULL(node);
+
+    AddressBook_free(&testBook);
+
+    TEST_ASSERT_TRUE(AddressBook_isEmpty(&testBook));
+}
+
+// Test adding and removing
+void test_AddressBook_add_and_remove()
+{
+    // Test the newly initialized AddressBook to be empty
+    TEST_ASSERT_TRUE(AddressBook_isEmpty(&testBook));
+
+    AddressBook_init_with_entry(&testBook, "Test Remove", "removeMe@example.com", 1234);
+
+    // Test it to not be empty after adding
+    TEST_ASSERT_FALSE(AddressBook_isEmpty(&testBook));
+
+    AddressBook_delete(&testBook, "Test Remove", "removeMe@example.com", 1234);
+
+    // Assert that the list is empty after deleting the only contact in that list
+    TEST_ASSERT_TRUE(AddressBook_isEmpty(&testBook));
+
+    AddressBook_free(&testBook);
 }
 
 void UnityTest()
@@ -224,14 +294,16 @@ void UnityTest()
     UNITY_BEGIN();
 
     RUN_TEST(test_AddressBook_init);
+    RUN_TEST(test_AddressBook_init_with_entry);
     RUN_TEST(test_AddressBook_add_and_find);
-    RUN_TEST(test_AddressBook_edit);
-    // Load
-    // Save
-    //RUN_TEST(test_AddressBook_remove);
+    RUN_TEST(test_AddressBook_add_and_edit);
+    RUN_TEST(test_AddressBook_add_and_remove);
+    RUN_TEST(test_AddressBook_load_and_find);
+    RUN_TEST(test_AddressBook_load_and_clear);
 
     UNITY_END();
 }
+
 
 /*
  * END OF UNITY TEST
@@ -239,6 +311,7 @@ void UnityTest()
 
 int main() {
     char choice;
+    printf("WELCOME TO THE ADDRESS BOOK PROGRAM\n");
     printf("Unit Test? (y/n): ");
     scanf(" %c", &choice); // leading space to ignore whitespace
     while (getchar() != '\n');  // Clear input buffer, space before `%c` skips leading whitespace

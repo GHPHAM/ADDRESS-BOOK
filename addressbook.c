@@ -136,7 +136,6 @@ void AddressBook_load(struct AddressBook *book, char* fileName)
     char name[100];
     char email[100];
     char phoneNumber[20];
-    bool isFirst = true;
 
     // I'll not parse with functions from <String.h>
     // Loop through the file and use AddressBook_add
@@ -151,7 +150,6 @@ void AddressBook_load(struct AddressBook *book, char* fileName)
         phoneNumber[0] = '\0';
 
         char *currentField = name; // Start with name field
-        printf("HERE...\n");
         while (buffer[i] != '\0' && buffer[i] != '\n' && buffer[i] != '\r')
         {
             if (buffer[i] == ',')
@@ -168,10 +166,12 @@ void AddressBook_load(struct AddressBook *book, char* fileName)
                     currentField = phoneNumber;
             }
             else
+            {
                 currentField[j] = buffer[i];
+                ++j;
+            }
 
             ++i;
-            ++j;
         }
 
         // Make sure the last field is null-terminated
@@ -179,11 +179,8 @@ void AddressBook_load(struct AddressBook *book, char* fileName)
 
         // BUG: PHONE NUMBER ISN'T PARSED CORRECTLY
         // Add the contact to the address book
-        if(isFirst)
-        {
+        if(AddressBook_isEmpty(book))
             AddressBook_init_with_entry(book, name, email, atoi(phoneNumber));
-            isFirst = false;
-        }
         else
             AddressBook_add(book, name, email, atoi(phoneNumber));
     }
@@ -200,7 +197,7 @@ void AddressBook_save(struct AddressBook *book, char* fileName)
         return;
     }
     struct Node* current = book->head;
-    if (current == NULL) {
+    if (AddressBook_isEmpty(book)) {
         printf("(Empty address book)\n");
         fclose(fp); // Close the file since we can't write anything
         return;

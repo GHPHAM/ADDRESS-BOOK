@@ -213,12 +213,8 @@ void AddressBook_load(struct AddressBook *book, char* fileName)
         // Make sure the last field is null-terminated
         currentField[j] = '\0';
 
-        // BUG: PHONE NUMBER ISN'T PARSED CORRECTLY
         // Add the contact to the address book
-        if(AddressBook_isEmpty(book))
-            AddressBook_init_with_entry(book, name, email, atoi(phoneNumber));
-        else
-            AddressBook_add(book, name, email, atoi(phoneNumber));
+        AddressBook_add(book, name, email, atoi(phoneNumber));
     }
 
     fclose(fp);

@@ -324,6 +324,7 @@ int main() {
     else // MENU INTERFACE, UNUSED IF WE ARE UNIT TESTING
     {
         struct AddressBook myBook;
+        AddressBook_init(&myBook);
         menu(&myBook); // feed address
         AddressBook_free(&myBook); // free memory
     }
